@@ -127,10 +127,14 @@ tests.test_normalize(normalize)
 # 提示：不要重复发明轮子。
 # 
 
-# In[94]:
+# In[119]:
 
 
 from sklearn.preprocessing import LabelBinarizer
+
+encoder = LabelBinarizer()
+encoder.fit(range(10))
+
 def one_hot_encode(x):
     """
     One hot encode a list of sample labels. Return a one-hot encoded vector for each label.
@@ -138,8 +142,6 @@ def one_hot_encode(x):
     : return: Numpy array of one-hot encoded labels
     """
     # TODO: Implement Function
-    encoder = LabelBinarizer()
-    encoder.fit([0,1,2,3,4,5,6,7,8,9])
     return encoder.transform(x)
 
 
@@ -403,7 +405,7 @@ tests.test_output(output)
 # * 返回输出
 # * 使用 `keep_prob` 向模型中的一个或多个层应用 [TensorFlow 的 Dropout](https://www.tensorflow.org/api_docs/python/tf/nn/dropout)
 
-# In[110]:
+# In[136]:
 
 
 def conv_net(x, keep_prob):
@@ -417,9 +419,12 @@ def conv_net(x, keep_prob):
     #    Play around with different number of outputs, kernel size and stride
     # Function Definition from Above:
     #    conv2d_maxpool(x_tensor, conv_num_outputs, conv_ksize, conv_strides, pool_ksize, pool_strides)
-    conv_ksize = (5, 5)
+    
+    # conv_strides maybe (3, 3), (4, 4) (5, 5), the prior two is better choice
+    conv_ksize = (4, 4)
     conv_strides = (1, 1)
-    pool_ksize = (2, 2)
+    # pool_ksize = (3, 3) or (2, 2)
+    pool_ksize = (3, 3)
     pool_strides = (2, 2)
     conv_neural_net = conv2d_maxpool(x, 16, conv_ksize, conv_strides, pool_ksize, pool_strides)
     conv_neural_net = conv2d_maxpool(conv_neural_net, 64, conv_ksize, conv_strides, pool_ksize, pool_strides)
@@ -497,7 +502,7 @@ tests.test_conv_net(conv_net)
 # 注意：不需要返回任何内容。该函数只是用来优化神经网络。
 # 
 
-# In[111]:
+# In[122]:
 
 
 def train_neural_network(session, optimizer, keep_probability, feature_batch, label_batch):
@@ -524,7 +529,7 @@ tests.test_train_nn(train_neural_network)
 # 实现函数 `print_stats` 以输出损失和验证准确率。使用全局变量 `valid_features` 和 `valid_labels` 计算验证准确率。使用保留率 `1.0` 计算损失和验证准确率（loss and validation accuracy）。
 # 
 
-# In[112]:
+# In[123]:
 
 
 def print_stats(session, feature_batch, label_batch, cost, accuracy):
@@ -538,8 +543,8 @@ def print_stats(session, feature_batch, label_batch, cost, accuracy):
     """
     # TODO: Implement Function
     global valid_features, valid_labels
+    cost = session.run(cost, feed_dict={x: feature_batch, y: label_batch, keep_prob: 1.0})
     accuracy = session.run(accuracy, feed_dict={x: valid_features, y: valid_labels, keep_prob: 1.0})
-    cost = session.run(cost, feed_dict={x: valid_features, y: valid_labels, keep_prob: 1.0})
 
     print('Cost = {0} - Validation Accuracy = {1}'.format(cost, accuracy))
         
@@ -557,7 +562,7 @@ def print_stats(session, feature_batch, label_batch, cost, accuracy):
 #  * ...
 # * 设置 `keep_probability` 表示使用丢弃时保留节点的概率
 
-# In[115]:
+# In[137]:
 
 
 # TODO: Tune Parameters
@@ -571,7 +576,7 @@ keep_probability = 0.5
 # 我们先用单个部分，而不是用所有的 CIFAR-10 批次训练神经网络。这样可以节省时间，并对模型进行迭代，以提高准确率。最终验证准确率达到 50% 或以上之后，在下一部分对所有数据运行模型。
 # 
 
-# In[116]:
+# In[138]:
 
 
 """
@@ -595,7 +600,7 @@ with tf.Session() as sess:
 # 
 # 现在，单个 CIFAR-10 部分的准确率已经不错了，试试所有五个部分吧。
 
-# In[117]:
+# In[139]:
 
 
 """
@@ -631,7 +636,7 @@ with tf.Session() as sess:
 # 
 # 利用测试数据集测试你的模型。这将是最终的准确率。你的准确率应该高于 50%。如果没达到，请继续调整模型结构和参数。
 
-# In[118]:
+# In[141]:
 
 
 """
